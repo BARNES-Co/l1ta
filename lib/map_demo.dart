@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -20,7 +22,21 @@ class MapDemoScreen extends StatefulWidget {
 }
 
 class _MapDemoScreenState extends State<MapDemoScreen> {
+  Timer? _timer;
+  int step = 0;
+
+  String orderButtonText = "Continue to Order";
+
   late String _nightMapStyle;
+
+  final Marker maker = Marker(
+      markerId: MarkerId("DropBox-206"),
+      position: LatLng(41.03689905537658, 28.98291099091495),
+      infoWindow: InfoWindow(title: "DropBox-206"),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure));
+
+  bool isPaymentStep = false;
+  bool isPaymentSuccessful = false;
 
   SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
@@ -34,9 +50,8 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
   late GoogleMapController mapController;
 
   Map<String, double> products = {"bread": 3, "milk": 16};
-
+  List<String> cart = [];
   double createOrder(String text) {
-    List<String> cart = [];
     double bill = 0;
     if (text.contains("bread")) {
       cart.add("bread");
@@ -76,7 +91,6 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
     setState(() {
       _lastWords = result.recognizedWords;
       _lastWords = createOrder(_lastWords).toString();
-      destinationAddressController.text = _lastWords;
     });
   }
 
@@ -523,6 +537,7 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
                                       });
 
                                       _calculateDistance();
+                                      setState(() {});
                                     }
                                   : null,
                               child: Padding(
@@ -628,40 +643,75 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
               ),
             ),
           ),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 650.0, bottom: 150.0, right: 15, top: 15),
-                  child: Card(
-                    elevation: 0.7,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Card(
-                              color: Color.fromRGBO(5, 100, 98, 0.95),
-                              child: Text("Your Cart"),
-                            )),
-                        SizedBox(
-                            height: 50,
-                            child: Card(
-                              color: Color.fromRGBO(5, 100, 98, 0.95),
-                              child: Text("Bread"),
-                            )),
-                        SizedBox(
-                            height: 50,
-                            child: Card(
-                              color: Color.fromRGBO(5, 100, 98, 0.95),
-                              child: Text("Bread"),
-                            )),
-                        SizedBox(height: 50, child: Card()),
-                        TextButton(onPressed: () {}, child: Container())
-                      ],
-                    ),
-                  )),
+          Visibility(
+            visible: cart.isNotEmpty,
+            child: SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 650.0, bottom: 145.0, right: 15, top: 20),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      elevation: 0.7,
+                      color: Color.fromARGB(180, 6, 18, 32),
+                      child: Column(
+                        children: [
+                          cart.isNotEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 5.0),
+                                  child: SizedBox(
+                                      height: 33,
+                                      width: 100,
+                                      child: Card(
+                                        child: Container(
+                                            alignment: Alignment.center,
+                                            child: Text("Your Cart")),
+                                      )),
+                                )
+                              : Container(),
+                          cart.isNotEmpty
+                              ? SizedBox(
+                                  height: 35,
+                                  width: 180,
+                                  child: Card(
+                                    color: Color.fromRGBO(5, 100, 98, 0.35),
+                                    child: Container(
+                                        alignment: Alignment.center,
+                                        child: Text("1x Bread")),
+                                  ))
+                              : Container(),
+                          SizedBox(
+                              height: 35,
+                              width: 180,
+                              child: Card(
+                                color: Color.fromRGBO(5, 100, 98, 0.35),
+                                child: Container(
+                                    alignment: Alignment.center,
+                                    child: Text("1x Milk")),
+                              )),
+                          SizedBox(height: 50, child: Card()),
+                          SizedBox(
+                              width: 150,
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      orderButtonText = "Confirm the DropBox";
+                                      step += 1;
+                                      markers.add(maker);
+                                      if (step == 1) {
+                                        isPaymentStep = true;
+                                        orderButtonText = "Confirm the Order";
+                                      }
+                                    });
+                                  },
+                                  child: Text(orderButtonText)))
+                        ],
+                      ),
+                    )),
+              ),
             ),
           ),
           SafeArea(
@@ -702,6 +752,145 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
               ),
             ),
           ),
+          isPaymentStep
+              ? Container(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    height: 350,
+                    width: 500,
+                    child: Card(
+                      color: Color.fromRGBO(8, 6, 3, 0.8),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Do you accept the purchase?",
+                            style: TextStyle(color: Colors.white, fontSize: 30),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 15),
+                            child: Divider(
+                              thickness: 2,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                TextButton(
+                                    onPressed: () {
+                                      isPaymentStep = false;
+                                      cart = [];
+                                      isPaymentSuccessful = true;
+                                      const secs = const Duration(seconds: 1);
+                                      int _start = 3;
+                                      _timer = Timer.periodic(
+                                        secs,
+                                        (Timer timer) {
+                                          if (_start == 0) {
+                                            setState(() {
+                                              timer.cancel();
+                                              isPaymentSuccessful = false;
+                                            });
+                                          } else {
+                                            setState(() {
+                                              _start--;
+                                            });
+                                          }
+                                        },
+                                      );
+                                      setState(() {});
+                                    },
+                                    child: Text(
+                                      "Yes",
+                                      style: TextStyle(
+                                          color: Colors.green, fontSize: 24),
+                                    )),
+                                TextButton(
+                                    onPressed: () {
+                                      isPaymentStep = false;
+                                      cart = [];
+                                      setState(() {});
+                                    },
+                                    child: Text("No",
+                                        style: TextStyle(
+                                            color: Colors.red, fontSize: 24)))
+                              ]),
+                          SizedBox(height: 40),
+                          Text("Price: ₺19.00",
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 24))
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
+          isPaymentSuccessful
+              ? GestureDetector(
+                  onTap: () => setState(() {
+                    isPaymentSuccessful = false;
+                  }),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      height: 350,
+                      width: 500,
+                      child: Card(
+                        color: Color.fromRGBO(8, 6, 3, 0.8),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.green,
+                              size: 70,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 15),
+                              child: Divider(
+                                thickness: 2,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  TextButton(
+                                      onPressed: () {
+                                        isPaymentSuccessful = true;
+                                        isPaymentStep = false;
+                                        cart = [];
+                                      },
+                                      child: Text(
+                                        "Thanks for your purchase!",
+                                        style: TextStyle(
+                                            color: Colors.green, fontSize: 24),
+                                      )),
+                                  TextButton(
+                                      onPressed: () {
+                                        isPaymentStep = false;
+                                        cart = [];
+                                      },
+                                      child: Text(
+                                          "You can take your order from \'Doğan Büfe\'",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 24)))
+                                ])
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : Container()
         ]),
       ],
     );
