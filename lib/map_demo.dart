@@ -535,7 +535,20 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
                                           polylineCoordinates.clear();
                                         _placeDistance = null;
                                       });
-
+                                      const secs = const Duration(seconds: 1);
+                                      int _start = 2;
+                                      _timer = Timer.periodic(
+                                        secs,
+                                        (Timer timer) {
+                                          if (_start == 0) {
+                                            setState(() {});
+                                          } else {
+                                            setState(() {
+                                              _start--;
+                                            });
+                                          }
+                                        },
+                                      );
                                       _calculateDistance();
                                       setState(() {});
                                     }
@@ -667,8 +680,16 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
                                       width: 100,
                                       child: Card(
                                         child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  170, 6, 18, 32),
+                                            ),
                                             alignment: Alignment.center,
-                                            child: Text("Your Cart")),
+                                            child: Text(
+                                              "Your Cart",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            )),
                                       )),
                                 )
                               : Container(),
@@ -677,7 +698,7 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
                                   height: 35,
                                   width: 180,
                                   child: Card(
-                                    color: Color.fromRGBO(5, 100, 98, 0.35),
+                                    color: Color.fromRGBO(5, 100, 98, 1),
                                     child: Container(
                                         alignment: Alignment.center,
                                         child: Text("1x Bread")),
@@ -687,7 +708,7 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
                               height: 35,
                               width: 180,
                               child: Card(
-                                color: Color.fromRGBO(5, 100, 98, 0.35),
+                                color: Color.fromRGBO(5, 100, 98, 1),
                                 child: Container(
                                     alignment: Alignment.center,
                                     child: Text("1x Milk")),
@@ -703,7 +724,8 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
                                       markers.add(maker);
                                       if (step == 1) {
                                         isPaymentStep = true;
-                                        orderButtonText = "Confirm the Order";
+                                        orderButtonText = "Continue the Order";
+                                        step = 0;
                                       }
                                     });
                                   },
@@ -759,6 +781,9 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
                     height: 350,
                     width: 500,
                     child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                       color: Color.fromRGBO(8, 6, 3, 0.8),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -840,6 +865,9 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
                       height: 350,
                       width: 500,
                       child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
                         color: Color.fromRGBO(8, 6, 3, 0.8),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -879,7 +907,7 @@ class _MapDemoScreenState extends State<MapDemoScreen> {
                                         cart = [];
                                       },
                                       child: Text(
-                                          "You can take your order from \'Doğan Büfe\'",
+                                          "You can take your order from \'DropBox-206\'",
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 24)))

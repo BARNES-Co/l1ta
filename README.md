@@ -1,13 +1,16 @@
 # l1ta
 
-L1+Δ in car shopping application made by Barnes Co. for StarHack 2021. 
+A new Flutter project.
 
-Barnes Co. is a group with 4 students:
-- Baran INCE
-- Ismet KILINC
-- Muhammed Enes UNAL
-- Ogehan Gucay GUL
+## Getting Started
 
-First Canva Slide: https://www.canva.com/design/DAEyRN2Co7E/414PPVVFmdvCOQOL5izP-w/view?utm_content=DAEyRN2Co7E&utm_campaign=designshare&utm_medium=link&utm_source=sharebutton
+This project is a starting point for a Flutter application.
 
-Second Canva Slide: https://www.canva.com/design/DAEyPr7CPwk/_Q8E5K8aXQInu8eze_fQfQ/view?utm_content=DAEyPr7CPwk&utm_campaign=designshare&utm_medium=link&utm_source=sharebutton
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+
+For help getting started with Flutter, view our
+[online documentation](https://flutter.dev/docs), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
